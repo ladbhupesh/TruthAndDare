@@ -6,6 +6,7 @@ export const PlayerSetup: React.FC = () => {
   const { addPlayer, startGame, players } = useGameStore();
   const [player1, setPlayer1] = useState({ name: '', gender: 'male' as 'male' | 'female' });
   const [player2, setPlayer2] = useState({ name: '', gender: 'female' as 'male' | 'female' });
+  const [gameMode, setGameMode] = useState<'long-distance' | 'face-to-face'>('long-distance');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +37,8 @@ export const PlayerSetup: React.FC = () => {
     addPlayer(player1Obj);
     addPlayer(player2Obj);
     
-    // Start the game
-    startGame();
+    // Start the game with selected mode
+    startGame(gameMode);
   };
 
   if (players.length >= 2) return null;
@@ -78,6 +79,58 @@ export const PlayerSetup: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-10">
+            {/* Game Mode Selection */}
+            <div className="glass-level1 rounded-2xl p-8 animate-scale-in" style={{ animationDelay: '0.05s' }}>
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center mr-4">
+                  <span className="text-xl">🎮</span>
+                </div>
+                <h3 className="text-2xl font-bold text-premium">Game Mode</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <label className="block text-sm font-semibold text-gray-300 mb-4">
+                  Choose your experience type
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="flex items-center justify-center p-6 rounded-xl border-2 border-gray-600 cursor-pointer group hover:border-purple-400 transition-colors">
+                    <input
+                      type="radio"
+                      name="gameMode"
+                      value="long-distance"
+                      checked={gameMode === 'long-distance'}
+                      onChange={(e) => setGameMode(e.target.value as 'long-distance' | 'face-to-face')}
+                      className="radio-premium mr-4"
+                    />
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">📱</div>
+                      <span className="text-lg font-semibold text-gray-300 group-hover:text-white transition-colors">
+                        Long Distance
+                      </span>
+                      <p className="text-sm text-gray-400 mt-1">Perfect for couples apart</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center justify-center p-6 rounded-xl border-2 border-gray-600 cursor-pointer group hover:border-pink-400 transition-colors">
+                    <input
+                      type="radio"
+                      name="gameMode"
+                      value="face-to-face"
+                      checked={gameMode === 'face-to-face'}
+                      onChange={(e) => setGameMode(e.target.value as 'long-distance' | 'face-to-face')}
+                      className="radio-premium mr-4"
+                    />
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">👫</div>
+                      <span className="text-lg font-semibold text-gray-300 group-hover:text-white transition-colors">
+                        Face to Face
+                      </span>
+                      <p className="text-sm text-gray-400 mt-1">For couples together</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             {/* Player 1 */}
             <div className="glass-level1 rounded-2xl p-8 animate-scale-in" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center mb-6">

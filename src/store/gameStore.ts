@@ -12,7 +12,7 @@ interface GameStore extends GameState {
   completePrompt: (promptId: string) => void;
   nextLevel: () => void;
   resetGame: () => void;
-  startGame: () => void;
+  startGame: (gameMode: 'long-distance' | 'face-to-face') => void;
   getRandomPrompt: (type: 'truth' | 'dare', gender: 'male' | 'female', level: number) => Promise<Prompt | null>;
   canChooseType: (playerId: string, type: 'truth' | 'dare') => boolean;
   isLevelComplete: () => boolean;
@@ -27,6 +27,7 @@ const initialGameState: GameState = {
   players: [],
   completedPrompts: new Set(),
   gameCompleted: false,
+  gameMode: 'long-distance',
 };
 
 export const useGameStore = create<GameStore>()(
@@ -111,16 +112,18 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      startGame: () => {
-        set({ gameStarted: true });
+      startGame: (gameMode: 'long-distance' | 'face-to-face') => {
+        set({ gameStarted: true, gameMode });
         db.saveGameState('gameStarted', true);
+        db.saveGameState('gameMode', gameMode);
       },
 
       getRandomPrompt: async (type: 'truth' | 'dare', gender: 'male' | 'female', level: number) => {
         try {
           const { getRandomPrompt: getPrompt } = await import('../data/prompts');
-          const prompt = getPrompt(type, gender, level, get().completedPrompts);
-          console.log(`🎯 Getting prompt for ${type} (${gender}, level ${level}):`, prompt ? 'Found' : 'Not found');
+          const gameMode = get().gameMode;
+          const prompt = getPrompt(type, gender, level, gameMode, get().completedPrompts);
+          console.log(`🎯 Getting prompt for ${type} (${gender}, level ${level}, ${gameMode}):`, prompt ? 'Found' : 'Not found');
           return prompt;
         } catch (error) {
           console.error('Error getting random prompt:', error);
@@ -166,6 +169,7 @@ export const useGameStore = create<GameStore>()(
         players: state.players,
         completedPrompts: Array.from(state.completedPrompts),
         gameCompleted: state.gameCompleted,
+        gameMode: state.gameMode,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

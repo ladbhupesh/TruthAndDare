@@ -14,6 +14,7 @@ export interface GameState {
   players: Player[];
   completedPrompts: Set<string>;
   gameCompleted: boolean;
+  gameMode: 'long-distance' | 'face-to-face';
 }
 
 export interface Prompt {
@@ -22,6 +23,7 @@ export interface Prompt {
   type: 'truth' | 'dare';
   gender: 'male' | 'female';
   level: number;
+  gameMode: 'long-distance' | 'face-to-face';
 }
 
 export interface GameSettings {
